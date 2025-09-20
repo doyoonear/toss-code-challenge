@@ -72,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -80,12 +80,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
       onClick={handleBackdropClick}
       onKeyDown={trapFocus}
     >
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
-      
       <div
         ref={modalRef}
         className="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
         role="document"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
