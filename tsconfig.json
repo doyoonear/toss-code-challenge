@@ -1,12 +1,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "target": "esnext",
+    "lib": ["dom", "esnext"],
     "jsx": "react-jsx",
-    "module": "preserve",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
-    "verbatimModuleSyntax": true
   }
 }

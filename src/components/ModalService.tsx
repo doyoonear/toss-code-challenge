@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, ReactElement } from 'react';
 import Modal from './Modal';
 import ApplicationForm from './ApplicationForm';
 
@@ -20,7 +20,7 @@ interface ModalContextType {
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
-export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ModalProvider: React.FC<{ children: ReactElement }> = ({ children }) => {
   const [modalState, setModalState] = useState<ModalState>({ isOpen: false });
 
   const openFormModal = (): Promise<FormData | null> => {
