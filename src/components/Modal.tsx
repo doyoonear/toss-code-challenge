@@ -85,6 +85,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
       <div
         ref={modalRef}
         className="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+        role="document"
       >
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
@@ -108,14 +109,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
               onClick={onClose}
               className="ml-4 p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="모달 닫기"
+              aria-describedby="close-button-description"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
           
-          <div className="mt-4">
+          <div className="mt-4" role="main" aria-label="폼 내용">
             {children}
           </div>
         </div>
