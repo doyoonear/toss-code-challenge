@@ -10,18 +10,15 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, children }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const firstFocusableRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       
-      const focusableElements = modalRef.current?.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements && focusableElements.length > 0) {
-        (focusableElements[0] as HTMLElement).focus();
-      }
+      setTimeout(() => {
+        titleRef.current?.focus();
+      }, 0);
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -92,7 +89,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+              <h2 
+                id="modal-title" 
+                ref={titleRef}
+                tabIndex={-1}
+                className="text-lg font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              >
                 {title}
               </h2>
               {description && (

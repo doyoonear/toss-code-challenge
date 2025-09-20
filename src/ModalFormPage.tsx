@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Modal from './components/Modal';
 import ApplicationForm from './components/ApplicationForm';
 
@@ -11,6 +11,7 @@ interface FormData {
 
 const ModalFormPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleFormSubmit = (data: FormData) => {
     console.log('제출된 데이터:', data);
@@ -20,6 +21,9 @@ const ModalFormPage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setTimeout(() => {
+      openButtonRef.current?.focus();
+    }, 0);
   };
 
   return (
@@ -33,6 +37,7 @@ const ModalFormPage = () => {
         </p>
         
         <button
+          ref={openButtonRef}
           onClick={() => setIsModalOpen(true)}
           className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
         >
