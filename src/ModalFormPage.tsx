@@ -1,26 +1,20 @@
-import React, { useState, useRef } from 'react';
-import Modal from './components/Modal';
-import ApplicationForm from './components/ApplicationForm';
-
-interface FormData {
-  name: string;
-  email: string;
-  experience: string;
-  githubLink: string;
-}
+import React, { useRef } from 'react';
+import { useModal } from './components/ModalService';
 
 const ModalFormPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const openButtonRef = useRef<HTMLButtonElement>(null);
+  const { openFormModal } = useModal();
 
-  const handleFormSubmit = (data: FormData) => {
-    console.log('제출된 데이터:', data);
-    alert(`신청이 완료되었습니다!\n이름: ${data.name}\n이메일: ${data.email}\n경력: ${data.experience}${data.githubLink ? `\nGitHub: ${data.githubLink}` : ''}`);
-    setIsModalOpen(false);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
+  const handleOpenModal = async () => {
+    const result = await openFormModal();
+    
+    if (result) {
+      console.log('제출된 데이터:', result);
+      alert(`신청이 완료되었습니다!\n이름: ${result.name}\n이메일: ${result.email}\n경력: ${result.experience}${result.githubLink ? `\nGitHub: ${result.githubLink}` : ''}`);
+    } else {
+      console.log('모달이 취소되었습니다.');
+    }
+    
     setTimeout(() => {
       openButtonRef.current?.focus();
     }, 0);
@@ -40,7 +34,7 @@ const ModalFormPage = () => {
           
           <button
             ref={openButtonRef}
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenModal}
             className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
           >
             신청 폼 작성하기
@@ -59,17 +53,6 @@ const ModalFormPage = () => {
         <h2 className="text-2xl font-bold text-green-800">Green Block 3</h2>
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        title="신청 폼"
-        description="이메일과 FE 경력 연차 등 간단한 정보를 입력해주세요."
-      >
-        <ApplicationForm
-          onSubmit={handleFormSubmit}
-          onCancel={handleModalClose}
-        />
-      </Modal>
     </div>
   );
 };
