@@ -27,15 +27,15 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSubmit, onCancel })
     const newErrors: string[] = [];
     
     if (!formData.name.trim()) {
-      newErrors.push('이름/닉네임을 입력해주세요.');
+      newErrors.push('이름/닉네임');
     }
     if (!formData.email.trim()) {
-      newErrors.push('이메일을 입력해주세요.');
+      newErrors.push('이메일');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.push('올바른 이메일 형식을 입력해주세요.');
+      newErrors.push('올바른 이메일 형식');
     }
     if (!formData.experience) {
-      newErrors.push('FE 경력 연차를 선택해주세요.');
+      newErrors.push('FE 경력 연차');
     }
 
     setErrors(newErrors);
@@ -135,17 +135,14 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSubmit, onCancel })
       {showValidationError && errors.length > 0 && (
         <div 
           id="validation-error"
-          className="p-3 bg-red-50 border border-red-200 rounded-md"
+          className="p-3 bg-red-50 border border-red-200 rounded-md mt-4"
           role="alert"
-          aria-live="polite"
+          aria-live="assertive"
           tabIndex={-1}
         >
-          <p className="text-sm text-red-700 font-medium">필수 사항을 입력해주세요.</p>
-          <ul className="mt-1 text-sm text-red-600">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
+          <p className="text-sm text-red-700 font-medium">
+            {errors.join(', ')} 항목을 입력해주세요.
+          </p>
         </div>
       )}
 
@@ -159,12 +156,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSubmit, onCancel })
         </button>
         <button
           type="submit"
-          className={`flex-1 px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-            isFormValid 
-              ? 'bg-blue-600 hover:bg-blue-700' 
-              : 'bg-gray-400 cursor-not-allowed'
-          }`}
-          disabled={!isFormValid}
+          className="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           제출하기
         </button>
