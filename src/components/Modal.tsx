@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { MouseEvent, useEffect, useRef } from 'react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useModalAnimation } from '../hooks/useModalAnimation';
@@ -50,7 +50,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
         isActive={isOpen}
         className={`modal-content relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto ${isAnimating ? 'modal-enter' : ''}`}
         role="document"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: MouseEvent) => e.stopPropagation()}
       >
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">

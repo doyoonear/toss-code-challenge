@@ -1,18 +1,19 @@
-import React, { useRef, ReactNode } from 'react';
+import React, { useRef, PropsWithChildren, MouseEventHandler } from 'react';
 import { getFirstAndLastFocusableElements, shouldWrapToFirst, shouldWrapToLast } from '../utils/focusUtils';
 
 interface FocusTrapProps {
-  children: ReactNode;
   isActive?: boolean;
   className?: string;
+  role?: string;
+  onClick?: MouseEventHandler<HTMLDivElement> ;
 }
 
-const FocusTrap: React.FC<FocusTrapProps> = ({ 
+const FocusTrap = ({ 
   children, 
-  isActive = true, 
-  className = "",
+  isActive = true,
+  className = '',
   ...props 
-}) => {
+}: PropsWithChildren<FocusTrapProps>) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -38,7 +39,6 @@ const FocusTrap: React.FC<FocusTrapProps> = ({
     <div 
       ref={containerRef}
       onKeyDown={handleKeyDown}
-      className={className}
       {...props}
     >
       {children}
