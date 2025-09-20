@@ -1,4 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { useEscapeKey } from '../hooks/useEscapeKey';
+import { useModalAnimation } from '../hooks/useModalAnimation';
+
+import { getFirstAndLastFocusableElements, shouldWrapToFirst, shouldWrapToLast } from '../utils/focusUtils';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,68 +16,51 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, children }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  
+  const { isAnimating, shouldRender } = useModalAnimation(isOpen);
+  useBodyScrollLock(shouldRender);
+  useEscapeKey(isOpen, onClose);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      
-      setTimeout(() => {
+    if (isOpen && titleRef.current) {
+      const focusTimer = setTimeout(() => {
         titleRef.current?.focus();
-      }, 0);
-    } else {
-      document.body.style.overflow = 'unset';
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
     }
+  }, [isOpen, titleRef]);
 
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
+  const trapFocus = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab' || !modalRef.current) return;
 
-    document.addEventListener('keydown', handleEscape);
+    const { firstElement, lastElement } = getFirstAndLastFocusableElements(modalRef.current);
+    
+    if (!firstElement || !lastElement) return;
 
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
+    const isShiftPressed = e.shiftKey;
+    const currentActiveElement = document.activeElement;
 
+    if (isShiftPressed && shouldWrapToLast(currentActiveElement, firstElement)) {
+      e.preventDefault();
+      lastElement.focus();
+    } else if (!isShiftPressed && shouldWrapToFirst(currentActiveElement, lastElement)) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+  };
+  
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  const trapFocus = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Tab') return;
-
-    const focusableElements = modalRef.current?.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    if (!focusableElements || focusableElements.length === 0) return;
-
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-    if (e.shiftKey) {
-      if (document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement.focus();
-      }
-    } else {
-      if (document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement.focus();
-      }
-    }
-  };
-
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      className={`modal-overlay fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 ${isAnimating ? 'modal-enter' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -82,7 +70,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
     >
       <div
         ref={modalRef}
-        className="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className={`modal-content relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto ${isAnimating ? 'modal-enter' : ''}`}
         role="document"
         onClick={(e) => e.stopPropagation()}
       >
