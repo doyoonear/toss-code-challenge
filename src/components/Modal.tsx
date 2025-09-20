@@ -2,8 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { useModalAnimation } from '../hooks/useModalAnimation';
-
-import { getFirstAndLastFocusableElements, shouldWrapToFirst, shouldWrapToLast } from '../utils/focusUtils';
+import FocusTrap from './FocusTrap';
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,7 +13,6 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, children }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   
   const { isAnimating, shouldRender } = useModalAnimation(isOpen);
@@ -30,25 +28,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
       return () => clearTimeout(focusTimer);
     }
   }, [isOpen, titleRef]);
-
-  const trapFocus = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Tab' || !modalRef.current) return;
-
-    const { firstElement, lastElement } = getFirstAndLastFocusableElements(modalRef.current);
-    
-    if (!firstElement || !lastElement) return;
-
-    const isShiftPressed = e.shiftKey;
-    const currentActiveElement = document.activeElement;
-
-    if (isShiftPressed && shouldWrapToLast(currentActiveElement, firstElement)) {
-      e.preventDefault();
-      lastElement.focus();
-    } else if (!isShiftPressed && shouldWrapToFirst(currentActiveElement, lastElement)) {
-      e.preventDefault();
-      firstElement.focus();
-    }
-  };
   
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -66,10 +45,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
       aria-labelledby="modal-title"
       aria-describedby={description ? "modal-description" : undefined}
       onClick={handleBackdropClick}
-      onKeyDown={trapFocus}
     >
-      <div
-        ref={modalRef}
+      <FocusTrap 
+        isActive={isOpen}
         className={`modal-content relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto ${isAnimating ? 'modal-enter' : ''}`}
         role="document"
         onClick={(e) => e.stopPropagation()}
@@ -108,7 +86,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, description, chil
             {children}
           </div>
         </div>
-      </div>
+      </FocusTrap>
     </div>
   );
 };
